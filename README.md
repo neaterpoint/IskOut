@@ -70,6 +70,11 @@ Every profile carries a **Verified** badge backed by document approval. Students
 
 ---
 
+## Entity Relationship Diagram(ERD)
+![IskOut_ERD](IskOut_ERD.png)
+
+---
+
 ## License
 
 Copyright (c) 2026 Vince Mathew L. Silva — All Rights Reserved.

@@ -24,6 +24,8 @@
             android:exported="false"/>
         <activity android:name=".verification.VerificationActivity"
             android:exported="false"/>
+        <activity android:name=".confirmation.ConfirmationActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

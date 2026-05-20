@@ -1,21 +1,28 @@
 package com.project.iskout.verification
 
 import android.app.Dialog
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.OpenableColumns
 import android.view.Window
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.project.iskout.R
+import com.project.iskout.confirmation.ConfirmationActivity
+import androidx.core.graphics.toColorInt
+import androidx.core.graphics.drawable.toDrawable
 
 class VerificationActivity : AppCompatActivity(), VerificationContract.View {
     private lateinit var ivStudentIcon: ImageView
@@ -68,18 +75,18 @@ class VerificationActivity : AppCompatActivity(), VerificationContract.View {
 
         // 2. Set Student UI to 'Selected' state
         tvStudentTitle.setTextColor(Color.WHITE)
-        tvStudentSubtitle.setTextColor(Color.parseColor("#94A3B8"))
+        tvStudentSubtitle.setTextColor("#94A3B8".toColorInt())
 
         // Change Student Icon inner tint to white, and its background square to solid blue
         ivStudentIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
-        ivStudentIcon.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#358DEF"))
+        ivStudentIcon.backgroundTintList = ColorStateList.valueOf("#358DEF".toColorInt())
 
         // 3. Set Merchant UI to 'Unselected' state
-        tvMerchantTitle.setTextColor(Color.parseColor("#0F172A"))
-        tvMerchantSubtitle.setTextColor(Color.parseColor("#64748B"))
+        tvMerchantTitle.setTextColor("#0F172A".toColorInt())
+        tvMerchantSubtitle.setTextColor("#64748B".toColorInt())
 
         // Change Merchant Icon inner tint to blue, and clear background tint to show default light square
-        ivMerchantIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#3B82F6"))
+        ivMerchantIcon.imageTintList = ColorStateList.valueOf("#3B82F6".toColorInt())
         ivMerchantIcon.backgroundTintList = null
     }
 
@@ -90,18 +97,18 @@ class VerificationActivity : AppCompatActivity(), VerificationContract.View {
 
         // 2. Set Merchant UI to 'Selected' state
         tvMerchantTitle.setTextColor(Color.WHITE)
-        tvMerchantSubtitle.setTextColor(Color.parseColor("#94A3B8"))
+        tvMerchantSubtitle.setTextColor("#94A3B8".toColorInt())
 
         // Change Merchant Icon inner tint to white, and its background square to solid blue
         ivMerchantIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
-        ivMerchantIcon.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#358DEF"))
+        ivMerchantIcon.backgroundTintList = ColorStateList.valueOf("#358DEF".toColorInt())
 
         // 3. Set Student UI to 'Unselected' state
-        tvStudentTitle.setTextColor(Color.parseColor("#0F172A"))
-        tvStudentSubtitle.setTextColor(Color.parseColor("#64748B"))
+        tvStudentTitle.setTextColor("#0F172A".toColorInt())
+        tvStudentSubtitle.setTextColor("#64748B".toColorInt())
 
         // Change Student Icon inner tint to blue, and clear background tint to show default light square
-        ivStudentIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#3B82F6"))
+        ivStudentIcon.imageTintList = ColorStateList.valueOf("#3B82F6".toColorInt())
         ivStudentIcon.backgroundTintList = null
     }
 
@@ -110,30 +117,70 @@ class VerificationActivity : AppCompatActivity(), VerificationContract.View {
     }
 
     override fun openFilePicker() {
-        Toast.makeText(this, "Opening Android File Picker...", Toast.LENGTH_SHORT).show()
+        // Define the exact file types you want to allow
+        val mimeTypes = arrayOf(
+            "image/jpeg",      // Allows .jpg and .jpeg
+            "image/png",       // Allows .png
+            "application/pdf"  // Allows .pdf
+        )
 
-        // TODO: Launch actual Intent(Intent.ACTION_GET_CONTENT) here.
-        // For testing the flow right now, let's fake a successful file pick:
-        //presenter.onFileSelected("my_document.pdf")
+        // Launch the picker with our specific rules
+        filePickerLauncher.launch(mimeTypes)
+    }
+    private val filePickerLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+        if (uri != null) {
+            val fileName = getFileNameFromUri(uri)
+            presenter.onFileSelected(fileName)
+            Toast.makeText(this, "Selected: $fileName", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+    // Helper function to extract the real file name from an Android URI
+    private fun getFileNameFromUri(uri: Uri): String {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = contentResolver.query(uri, null, null, null, null)
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    // Get the name column index
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex >= 0) {
+                        result = cursor.getString(nameIndex)
+                    }
+                }
+            } finally {
+                cursor?.close()
+            }
+        }
+        // Fallback if the above fails
+        if (result == null) {
+            result = uri.path
+            val cut = result?.lastIndexOf('/') ?: -1
+            if (cut != -1) {
+                result = result?.substring(cut + 1)
+            }
+        }
+        return result ?: "Unknown_File"
     }
 
     override fun setSubmitButtonEnabled(isEnabled: Boolean) {
         btnSubmit.isEnabled = isEnabled
         if (isEnabled) {
-            btnSubmit.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#3B82F6"))
+            btnSubmit.backgroundTintList = ColorStateList.valueOf("#3B82F6".toColorInt())
             btnSubmit.setTextColor(Color.WHITE)
         } else {
-            btnSubmit.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E2E8F0"))
-            btnSubmit.setTextColor(Color.parseColor("#94A3B8"))
+            btnSubmit.backgroundTintList = ColorStateList.valueOf("#E2E8F0".toColorInt())
+            btnSubmit.setTextColor("#94A3B8".toColorInt())
         }
     }
 
     override fun showLoading(isLoading: Boolean) {
         if (isLoading) {
-            btnSubmit.text = "Uploading..."
+            btnSubmit.text = getString(R.string.uploading_text)
             btnSubmit.isEnabled = false
         } else {
-            btnSubmit.text = "Submit for review"
+            btnSubmit.text = getString(R.string.submit_for_review)
             btnSubmit.isEnabled = true
         }
     }
@@ -142,7 +189,7 @@ class VerificationActivity : AppCompatActivity(), VerificationContract.View {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_error)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         // Allows the user to dismiss it early by tapping outside the box
         dialog.setCancelable(true)
@@ -162,8 +209,8 @@ class VerificationActivity : AppCompatActivity(), VerificationContract.View {
     }
 
     override fun navigateToNextStep() {
-        Toast.makeText(this, "Success! Moving to Step 3.", Toast.LENGTH_SHORT).show()
-        // Intent to next activity
+        val intent = Intent(this,ConfirmationActivity::class.java)
+        startActivity(intent)
     }
 
     override fun navigateBack() {
