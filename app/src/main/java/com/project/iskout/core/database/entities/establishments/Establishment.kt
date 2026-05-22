@@ -2,6 +2,7 @@ package com.project.iskout.core.database.entities.establishments
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.project.iskout.core.database.entities.users.MerchantProfile
 import java.util.UUID
@@ -11,6 +12,11 @@ import java.util.UUID
     foreignKeys = [
         ForeignKey(entity = MerchantProfile::class, parentColumns = ["profile_id"], childColumns = ["merchant_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = EstablishmentCategory::class, parentColumns = ["category_id"], childColumns = ["category_id"])
+    ],
+    // ADDED: Indices for merchant_id and category_id
+    indices = [
+        Index(value = ["merchant_id"]),
+        Index(value = ["category_id"])
     ]
 )
 data class Establishment(

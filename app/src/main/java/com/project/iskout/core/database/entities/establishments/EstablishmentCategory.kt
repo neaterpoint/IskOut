@@ -1,9 +1,7 @@
 package com.project.iskout.core.database.entities.establishments
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(tableName = "establishment_categories")
 data class EstablishmentCategory(

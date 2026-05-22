@@ -80,14 +80,6 @@
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </FrameLayout>
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_rounded_glass"
-            android:padding="10dp"
-            android:src="@drawable/ic_menu"
-            app:tint="@android:color/white" />
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
@@ -126,6 +118,7 @@
                 android:textSize="15sp" />
 
             <ImageView
+                android:id="@+id/btnFilterSearch"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:background="@drawable/bg_circle_blue"

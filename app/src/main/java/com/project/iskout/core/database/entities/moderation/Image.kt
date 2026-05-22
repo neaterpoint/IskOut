@@ -2,6 +2,7 @@ package com.project.iskout.core.database.entities.moderation
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.project.iskout.core.database.entities.establishments.Establishment
 import com.project.iskout.core.database.entities.users.User
@@ -13,6 +14,11 @@ import java.util.UUID
         ForeignKey(entity = Establishment::class, parentColumns = ["est_id"], childColumns = ["establishment_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = User::class, parentColumns = ["user_id"], childColumns = ["uploaded_by"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = Review::class, parentColumns = ["review_id"], childColumns = ["review_id"], onDelete = ForeignKey.SET_NULL)
+    ],
+    indices = [
+        Index(value = ["establishment_id"]),
+        Index(value = ["uploaded_by"]),
+        Index(value = ["review_id"])
     ]
 )
 data class Image(

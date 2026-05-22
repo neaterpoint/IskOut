@@ -2,12 +2,19 @@ package com.project.iskout.homepage.map
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.project.iskout.R
 
 class MapPageActivity : AppCompatActivity(), MapContract.View {
@@ -22,44 +29,140 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
     private lateinit var chipKarinderya: TextView
     private lateinit var chipCafe: TextView
     private lateinit var chipInumin: TextView
-
-    private var selectedType = "All"
     private lateinit var tvSpotsNearbyTitle: TextView
+
+    // Persist Advanced Filter States
+    private var activeMinRating = 0.0
+    private var activeDiscountsOnly = false
+    private var activeHideBusy = false
+    private var activeMaxPrice = 200 // Added max price persistence
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
         setContentView(R.layout.activity_maphomepage)
 
         webView = findViewById(R.id.mapWebView)
-
-        // 1. Find the Views
         tvSpotName = findViewById(R.id.tvSpotName)
         tvSpotDetails = findViewById(R.id.tvSpotDetails)
-
         chipAll = findViewById(R.id.chipAll)
         chipKarinderya = findViewById(R.id.chipKarinderya)
         chipCafe = findViewById(R.id.chipCafe)
         chipInumin = findViewById(R.id.chipInumin)
-
-        // FIX: Added the missing connection here!
         tvSpotsNearbyTitle = findViewById(R.id.tvSpotsNearbyTitle)
 
-        // 2. Set Listeners
-        chipAll.setOnClickListener { presenter.onFilterClicked("All") }
-        chipKarinderya.setOnClickListener { presenter.onFilterClicked("Karinderya") }
-        chipCafe.setOnClickListener { presenter.onFilterClicked("Cafe") }
-        chipInumin.setOnClickListener { presenter.onFilterClicked("Inumin") }
+        // Basic Category Listeners
+        chipAll.setOnClickListener { presenter.onCategoryClicked("All") }
+        chipKarinderya.setOnClickListener { presenter.onCategoryClicked("Karinderya") }
+        chipCafe.setOnClickListener { presenter.onCategoryClicked("Cafe") }
+        chipInumin.setOnClickListener { presenter.onCategoryClicked("Inumin") }
 
-        // 3. Initialize MVP and Map
         presenter = MapPresenter(this, MapModel())
+        setupAdvancedFiltersModal()
         initializeMap()
+    }
+
+    private fun setupAdvancedFiltersModal() {
+        val btnFilterSearch = findViewById<ImageView>(R.id.btnFilterSearch)
+
+        btnFilterSearch.setOnClickListener {
+            val bottomSheetDialog = BottomSheetDialog(this)
+            bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_filters)
+
+            // Force wrap_content behavior
+            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+
+            // Bind UI elements inside the modal
+            val chipAny = bottomSheetDialog.findViewById<TextView>(R.id.chipRatingAny)
+            val chip3 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating3)
+            val chip4 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating4)
+            val chip45 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating45)
+            val chip48 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating48)
+
+            val switchDiscounts = bottomSheetDialog.findViewById<SwitchMaterial>(R.id.switchDiscounts)
+            val switchBusy = bottomSheetDialog.findViewById<SwitchMaterial>(R.id.switchBusy)
+
+            val etMaxPrice = bottomSheetDialog.findViewById<EditText>(R.id.etMaxPrice)
+
+            // Load current active states into the modal
+            var tempMinRating = activeMinRating
+            switchDiscounts?.isChecked = activeDiscountsOnly
+            switchBusy?.isChecked = activeHideBusy
+            etMaxPrice?.setText(activeMaxPrice.toString())
+
+            val ratingChips = mapOf(
+                0.0 to chipAny,
+                3.0 to chip3,
+                4.0 to chip4,
+                4.5 to chip45,
+                4.8 to chip48
+            )
+
+            // Helper to toggle active chip styling inside the modal
+            fun updateModalRatingUI(selected: Double) {
+                tempMinRating = selected
+                ratingChips.forEach { (rating, chip) ->
+                    if (rating == selected) {
+                        chip?.setBackgroundResource(R.drawable.bg_chip_active)
+                        chip?.setTextColor(android.graphics.Color.WHITE)
+                    } else {
+                        chip?.setBackgroundResource(R.drawable.bg_chip_inactive)
+                        chip?.setTextColor(android.graphics.Color.BLACK)
+                    }
+                }
+            }
+
+            // Set initial visual state
+            updateModalRatingUI(tempMinRating)
+
+            // Chip Click Listeners
+            chipAny?.setOnClickListener { updateModalRatingUI(0.0) }
+            chip3?.setOnClickListener { updateModalRatingUI(3.0) }
+            chip4?.setOnClickListener { updateModalRatingUI(4.0) }
+            chip45?.setOnClickListener { updateModalRatingUI(4.5) }
+            chip48?.setOnClickListener { updateModalRatingUI(4.8) }
+
+            // Apply Button
+            bottomSheetDialog.findViewById<MaterialButton>(R.id.btnApplyFilters)?.setOnClickListener {
+                activeMinRating = tempMinRating
+                activeDiscountsOnly = switchDiscounts?.isChecked ?: false
+                activeHideBusy = switchBusy?.isChecked ?: false
+
+                val maxPriceText = etMaxPrice?.text.toString()
+                activeMaxPrice = maxPriceText.toIntOrNull() ?: 200
+
+                presenter.onAdvancedFiltersApplied(activeMinRating, activeDiscountsOnly, activeHideBusy, activeMaxPrice)
+                bottomSheetDialog.dismiss()
+            }
+
+            // Reset Button
+            bottomSheetDialog.findViewById<MaterialButton>(R.id.btnReset)?.setOnClickListener {
+                activeMinRating = 0.0
+                activeDiscountsOnly = false
+                activeHideBusy = false
+                activeMaxPrice = 200 // Reset price too
+
+                presenter.onAdvancedFiltersApplied(activeMinRating, activeDiscountsOnly, activeHideBusy, activeMaxPrice)
+                bottomSheetDialog.dismiss()
+            }
+
+            // Close (X) Button
+            bottomSheetDialog.findViewById<ImageView>(R.id.btnClose)?.setOnClickListener {
+                bottomSheetDialog.dismiss() // Dismisses without applying changes
+            }
+
+            bottomSheetDialog.show()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun initializeMap() {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
-
         webView.addJavascriptInterface(WebAppInterface(), "AndroidInterface")
 
         webView.webViewClient = object : WebViewClient() {
@@ -67,13 +170,11 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 presenter.onMapReady()
             }
         }
-
         webView.loadUrl("file:///android_asset/leaflet_map.html")
     }
 
     override fun showSpotsOnMap(spots: List<Spot>) {
         webView.evaluateJavascript("clearAllMarkers();", null)
-
         for (spot in spots) {
             val jsCommand = "addSpotMarker('${spot.id}', ${spot.latitude}, ${spot.longitude}, '${spot.name}', '${spot.type}', '${spot.priceTag}');"
             webView.evaluateJavascript(jsCommand, null)
@@ -84,9 +185,7 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         webView.evaluateJavascript("centerOnUser();", null)
     }
 
-    override fun updateFilterUI(selectedType: String) {
-        this.selectedType = selectedType
-
+    override fun updateCategoryUI(selectedType: String) {
         val allChips = mapOf(
             "All" to chipAll,
             "Karinderya" to chipKarinderya,
@@ -103,8 +202,10 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 chip.setTextColor(android.graphics.Color.BLACK)
             }
         }
+    }
 
-        val count = if (selectedType == "All") 30 else 10
+    // Dynamic Title Updater based on exactly how many items passed the filters
+    override fun updateSpotsCount(count: Int) {
         tvSpotsNearbyTitle.text = "$count SPOTS NEARBY"
     }
 

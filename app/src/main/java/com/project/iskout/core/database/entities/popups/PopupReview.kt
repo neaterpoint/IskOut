@@ -2,6 +2,7 @@ package com.project.iskout.core.database.entities.popups
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.project.iskout.core.database.entities.users.User
 import java.util.UUID
@@ -11,6 +12,10 @@ import java.util.UUID
     foreignKeys = [
         ForeignKey(entity = StudentPopup::class, parentColumns = ["popup_id"], childColumns = ["popup_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = User::class, parentColumns = ["user_id"], childColumns = ["reviewer_id"], onDelete = ForeignKey.CASCADE)
+    ],
+    indices = [
+        Index(value = ["popup_id"]),
+        Index(value = ["reviewer_id"])
     ]
 )
 data class PopupReview(

@@ -2,6 +2,7 @@ package com.project.iskout.core.database.entities.users
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
@@ -10,6 +11,11 @@ import java.util.UUID
     foreignKeys = [
         ForeignKey(entity = User::class, parentColumns = ["user_id"], childColumns = ["user_id"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = User::class, parentColumns = ["user_id"], childColumns = ["reviewed_by"], onDelete = ForeignKey.SET_NULL)
+    ],
+    // ADDED: Indices for user_id and reviewed_by
+    indices = [
+        Index(value = ["user_id"]),
+        Index(value = ["reviewed_by"])
     ]
 )
 data class VerificationDocument(

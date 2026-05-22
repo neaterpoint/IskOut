@@ -4,7 +4,8 @@ interface MapContract {
     interface View {
         fun initializeMap()
         fun showSpotsOnMap(spots: List<Spot>)
-        fun updateFilterUI(selectedType: String)
+        fun updateCategoryUI(selectedType: String)
+        fun updateSpotsCount(count: Int)
         fun updateBottomSheetDetails(spot: Spot)
         fun centerMapOnUserLocation()
         fun showError(message: String)
@@ -12,7 +13,8 @@ interface MapContract {
 
     interface Presenter {
         fun onMapReady()
-        fun onFilterClicked(type: String)
+        fun onCategoryClicked(type: String)
+        fun onAdvancedFiltersApplied(minRating: Double, discountsOnly: Boolean, hideBusySpots: Boolean, maxPrice: Int)
         fun onMarkerClicked(spotId: String)
         fun onMyLocationClicked()
         fun onDestroy()
