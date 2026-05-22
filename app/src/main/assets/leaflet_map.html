@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body { padding: 0; margin: 0; }
+        /* Use percentage for height and viewport width to stretch fullscreen */
+        html, body, #map { height: 100%; width: 100vw; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    var map = L.map('map', { zoomControl: false }).setView([14.6549, 121.0646], 17);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var currentMarkers = [];
+
+    // Notice we added 'price' as the 6th parameter
+    function addSpotMarker(id, lat, lng, title, type, price) {
+
+        var iconEmoji = "📍";
+        if (type === "Karinderya") iconEmoji = "🍚";
+        else if (type === "Cafe") iconEmoji = "☕";
+        else if (type === "Inumin") iconEmoji = "🥤";
+
+        // The HTML for the new Speech Bubble design
+        var customIcon = L.divIcon({
+            className: 'custom-speech-bubble',
+            html: `
+                <div style="background-color: #3B82F6; color: white; border-radius: 16px; padding: 4px 10px 4px 4px; display: flex; align-items: center; gap: 6px; box-shadow: 0px 4px 8px rgba(0,0,0,0.3); position: relative; width: max-content;">
+                    <div style="background: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                        ${iconEmoji}
+                    </div>
+                    <span style="font-weight: bold; font-size: 13px; font-family: sans-serif;">${price}</span>
+
+                    <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid #3B82F6;"></div>
+                </div>
+            `,
+            iconSize: [64, 34],
+            iconAnchor: [32, 39] // Ensures the point of the triangle sits exactly on the coordinate
+        });
+
+        var marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+
+        marker.on('click', function() {
+            if (window.AndroidInterface) {
+                AndroidInterface.onMarkerClickedFromWeb(id);
+            }
+        });
+
+        currentMarkers.push(marker);
+    }
+
+    function clearAllMarkers() {
+        for(var i = 0; i < currentMarkers.length; i++) { map.removeLayer(currentMarkers[i]); }
+        currentMarkers = [];
+    }
+
+    function centerOnUser() {
+        map.locate({setView: true, maxZoom: 16});
+    }
+</script>
+</body>
+</html>
