@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.project.iskout.R
+import com.project.iskout.database.DatabaseConnection
 import com.project.iskout.homepage.map.MapPageActivity
 import com.project.iskout.register.RegisterActivity
 
@@ -34,7 +35,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         etPassword = findViewById<EditText>(R.id.etPassword)
         btnLogin = findViewById<Button>(R.id.btnLogin)
         tvRegister = findViewById<TextView>(R.id.tvRegister)
-        presenter = LoginPresenter(this, LoginModel())
+        //Database integration
+        val db = DatabaseConnection.getDatabase(this)
+        // 2. Pass the database into the model
+        presenter = LoginPresenter(this, LoginModel(db))
 
         btnLogin.setOnClickListener {
             val username:String = etEmail.text.toString()
@@ -77,8 +81,9 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
     }
 
     override fun navigateToLanding() {
-        val intent = Intent(this, MapPageActivity::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, MapPageActivity::class.java)
+//        startActivity(intent)
+        Toast.makeText(this, "Going to Homepage ;)", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {

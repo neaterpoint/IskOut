@@ -1,16 +1,24 @@
-package com.project.iskout.login;
+package com.project.iskout.login
 
-public class LoginModel {
-    // These properties are fine to keep if you plan to use them to hold the logged-in user's state later
-    var username: String? = null
-    var first_name: String? = null
-    var last_name: String? = null
+import com.project.iskout.database.DatabaseConnection
+import com.project.iskout.core.database.entities.users.User
 
-    fun login(usernameInput: String?, passwordInput: String?): Boolean {
-        // TODO: return com.practice.mvp_vs_practice2.data.UserRepository.login(username, password)
-        // Fetches database dbUsers to check user existence in the future.
+// Pass the database into the model so it can retrieve data
+class LoginModel(private val database: DatabaseConnection) {
 
-        // For the sake of making the code compile and run for your exam today:
-        return usernameInput == "admin" && passwordInput == "123"
+    var loggedInUser: User? = null
+
+    fun login(usernameInput: String, passwordInput: String): Boolean {
+        // 1. Ask the DAO (RetrieveData) to find the user
+        val user = database.userDao().login(usernameInput, passwordInput)
+
+        // 2. If user is NOT null, the login was successful!
+        if (user != null) {
+            loggedInUser = user // Save the state of the logged-in user
+            return true
+        }
+
+        // 3. If user is null, wrong credentials
+        return false
     }
 }

@@ -1,13 +1,7 @@
 package com.project.iskout.core
 
-data class User(
-    val username: String,
-    val firstName: String,
-    val lastName: String
-)
+import com.project.iskout.core.database.entities.users.User
 
-// The 'object' keyword makes this a Singleton.
-// You can access SessionManager from ANY Activity or Presenter!
 object SessionManager {
     var currentUser: User? = null
 
