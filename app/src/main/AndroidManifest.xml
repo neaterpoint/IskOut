@@ -26,6 +26,8 @@
             android:exported="false"/>
         <activity android:name=".confirmation.ConfirmationActivity"
             android:exported="false"/>
+        <activity android:name=".homepage.map.MapPageActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

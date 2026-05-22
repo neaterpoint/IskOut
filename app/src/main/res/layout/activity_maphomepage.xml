@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F4F8"> <FrameLayout
+    android:id="@+id/mapPlaceholder"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="[ Google Map Instance Here ]"
+        android:textColor="#94A3B8"
+        android:textStyle="bold" />
+</FrameLayout>
+
+    <View
+        android:id="@+id/topGradient"
+        android:layout_width="0dp"
+        android:layout_height="180dp"
+        android:background="@drawable/bg_top_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+                android:background="@drawable/bg_circle_white"
+            android:padding="8dp"
+            android:src="@drawable/ic_launcher_foreground"
+            app:tint="#3B82F6" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:text="Welcome, Iskolar"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_rounded_glass"
+            android:padding="10dp"
+            android:src="@drawable/ic_menu"
+            app:tint="@android:color/white" />
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchCard"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"
+                app:tint="#94A3B8" />
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Search karinderyas, cafes..."
+                android:textColorHint="#94A3B8"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_circle_blue"
+                android:padding="8dp"
+                android:src="@drawable/ic_filter"
+                app:tint="@android:color/white" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <HorizontalScrollView
+        android:id="@+id/chipsScroll"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="24dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchCard">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_active"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="All"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_chip_inactive"
+                android:drawablePadding="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:text="🍚 Karinderya"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_chip_inactive"
+                android:drawablePadding="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:text="☕ Café"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_chip_inactive"
+                android:drawablePadding="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:text="🥤 Inumin"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:background="@drawable/bg_bottom_gradient"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="#22708E"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:weightSum="4">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_nav_active"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_map"
+                    app:tint="#22708E" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Map"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_list"
+                    app:tint="#A0C4D3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Spots"
+                    android:textColor="#A0C4D3"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_tag"
+                    app:tint="#A0C4D3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Deals"
+                    android:textColor="#A0C4D3"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_profile"
+                    app:tint="#A0C4D3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Profile"
+                    android:textColor="#A0C4D3"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottomSheet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_pill_grey" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_dot_blue"
+                        android:drawablePadding="6dp"
+                        android:text="5 SPOTS NEARBY"
+                        android:textColor="#22708E"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Around UP Diliman"
+                        android:textColor="#0F172A"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_circle_light_blue"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_up"
+                    app:tint="#3B82F6" />
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#F8FAFC"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_circle_white"
+                        android:src="@drawable/ic_layers" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Aling Nena's Karinderya"
+                            android:textColor="#0F172A"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="⭐ 4.8 · ₱45 avg · 120m"
+                            android:textColor="#64748B"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_badge_blue"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="-20%"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/bottomSheet"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_circle_white"
+            android:elevation="6dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_layers"
+            app:tint="#0F172A" />
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circle_white"
+            android:elevation="6dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_my_location"
+            app:tint="#3B82F6" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -81,9 +81,8 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
     }
 
     override fun navigateToLanding() {
-//        val intent = Intent(this, MapPageActivity::class.java)
-//        startActivity(intent)
-        Toast.makeText(this, "Going to Homepage ;)", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, MapPageActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDestroy() {
