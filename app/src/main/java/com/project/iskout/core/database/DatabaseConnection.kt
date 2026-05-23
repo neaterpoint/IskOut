@@ -68,11 +68,11 @@ abstract class DatabaseConnection : RoomDatabase() {
 
                             // 3. Seed Users (Added 'created_at' and the '$time' variable)
                             db.execSQL("INSERT INTO users (user_id, email, username, password_hash, full_name, role, account_status, created_at) VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '123', 'admin_test', '123', 'Test Admin', 'admin', 'approved', $time)")
-                            db.execSQL("INSERT INTO users (user_id, email, username, password_hash, full_name, role, account_status, created_at) VALUES ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '1', 'student_test', '1', 'Test Student', 'student', 'approved', $time)")
+                            db.execSQL("INSERT INTO users (user_id, email, username, password_hash, full_name, role, account_status, created_at) VALUES ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '1', 'ecn', '1', 'Vince Mathew L. Silva', 'student', 'approved', $time)")
                             db.execSQL("INSERT INTO users (user_id, email, username, password_hash, full_name, role, account_status, created_at) VALUES ('cccccccc-cccc-cccc-cccc-cccccccccccc', '2', 'merchant_test', '2', 'Test Merchant', 'merchant', 'approved', $time)")
 
                             // 4. Seed Profiles (Added 'community_rating' and '0.0')
-                            db.execSQL("INSERT INTO student_profiles (profile_id, user_id, school_name, student_number, community_rating) VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'University of Cebu', '2024-00001', 0.0)")
+                            db.execSQL("INSERT INTO student_profiles (profile_id, user_id, school_name, student_number, community_rating) VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Cebu Institute of Technology - University', '2024-00001', 0.0)")
                             db.execSQL("INSERT INTO merchant_profiles (profile_id, user_id, business_name, permit_number, phone_number, community_rating) VALUES ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'Test Karenderia', 'BP-2026-0001', '09171234567', 0.0)")
                         }
                     })
