@@ -8,17 +8,11 @@ class LoginModel(private val database: DatabaseConnection) {
 
     var loggedInUser: User? = null
 
-    fun login(usernameInput: String, passwordInput: String): Boolean {
-        // 1. Ask the DAO (RetrieveData) to find the user
-        val user = database.userDao().login(usernameInput, passwordInput)
-
-        // 2. If user is NOT null, the login was successful!
-        if (user != null) {
-            loggedInUser = user // Save the state of the logged-in user
-            return true
-        }
-
-        // 3. If user is null, wrong credentials
-        return false
+    fun login(usernameInput: String, passwordInput: String): User? {
+        return database.userDao().login(usernameInput, passwordInput)
     }
+
+    fun getStudentProfile(userId: String) = database.userDao().getStudentProfile(userId)
+    fun getMerchantProfile(userId: String) = database.userDao().getMerchantProfile(userId)
+
 }
