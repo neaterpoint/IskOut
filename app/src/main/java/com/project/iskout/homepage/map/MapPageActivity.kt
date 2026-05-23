@@ -16,6 +16,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.project.iskout.R
+import com.project.iskout.utils.BottomNavManager
+import com.project.iskout.utils.NavTab
 
 class MapPageActivity : AppCompatActivity(), MapContract.View {
 
@@ -35,15 +37,18 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
     private var activeMinRating = 0.0
     private var activeDiscountsOnly = false
     private var activeHideBusy = false
-    private var activeMaxPrice = 200 // Added max price persistence
+    private var activeMaxPrice = 200
 
-    //Loading
     private lateinit var loadingOverlay: View
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
         setContentView(R.layout.activity_maphomepage)
 
+        // --- NEW: Setup Dynamic Bottom Nav ---
+        BottomNavManager.setup(this, NavTab.MAP)
+
+        loadingOverlay = findViewById(R.id.loadingOverlay)
         webView = findViewById(R.id.mapWebView)
         tvSpotName = findViewById(R.id.tvSpotName)
         tvSpotDetails = findViewById(R.id.tvSpotDetails)
@@ -60,7 +65,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         chipInumin.setOnClickListener { presenter.onCategoryClicked("Inumin") }
 
         presenter = MapPresenter(this, MapModel())
-        loadingOverlay = findViewById(R.id.loadingOverlay)
         setupAdvancedFiltersModal()
         initializeMap()
     }
@@ -72,7 +76,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
             val bottomSheetDialog = BottomSheetDialog(this)
             bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_filters)
 
-            // Force wrap_content behavior
             val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             bottomSheet?.let {
                 val behavior = BottomSheetBehavior.from(it)
@@ -80,7 +83,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 behavior.skipCollapsed = true
             }
 
-            // Bind UI elements inside the modal
             val chipAny = bottomSheetDialog.findViewById<TextView>(R.id.chipRatingAny)
             val chip3 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating3)
             val chip4 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating4)
@@ -89,10 +91,8 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
 
             val switchDiscounts = bottomSheetDialog.findViewById<SwitchMaterial>(R.id.switchDiscounts)
             val switchBusy = bottomSheetDialog.findViewById<SwitchMaterial>(R.id.switchBusy)
-
             val etMaxPrice = bottomSheetDialog.findViewById<EditText>(R.id.etMaxPrice)
 
-            // Load current active states into the modal
             var tempMinRating = activeMinRating
             switchDiscounts?.isChecked = activeDiscountsOnly
             switchBusy?.isChecked = activeHideBusy
@@ -106,7 +106,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 4.8 to chip48
             )
 
-            // Helper to toggle active chip styling inside the modal
             fun updateModalRatingUI(selected: Double) {
                 tempMinRating = selected
                 ratingChips.forEach { (rating, chip) ->
@@ -120,17 +119,14 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 }
             }
 
-            // Set initial visual state
             updateModalRatingUI(tempMinRating)
 
-            // Chip Click Listeners
             chipAny?.setOnClickListener { updateModalRatingUI(0.0) }
             chip3?.setOnClickListener { updateModalRatingUI(3.0) }
             chip4?.setOnClickListener { updateModalRatingUI(4.0) }
             chip45?.setOnClickListener { updateModalRatingUI(4.5) }
             chip48?.setOnClickListener { updateModalRatingUI(4.8) }
 
-            // Apply Button
             bottomSheetDialog.findViewById<MaterialButton>(R.id.btnApplyFilters)?.setOnClickListener {
                 activeMinRating = tempMinRating
                 activeDiscountsOnly = switchDiscounts?.isChecked ?: false
@@ -143,20 +139,18 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
                 bottomSheetDialog.dismiss()
             }
 
-            // Reset Button
             bottomSheetDialog.findViewById<MaterialButton>(R.id.btnReset)?.setOnClickListener {
                 activeMinRating = 0.0
                 activeDiscountsOnly = false
                 activeHideBusy = false
-                activeMaxPrice = 200 // Reset price too
+                activeMaxPrice = 200
 
                 presenter.onAdvancedFiltersApplied(activeMinRating, activeDiscountsOnly, activeHideBusy, activeMaxPrice)
                 bottomSheetDialog.dismiss()
             }
 
-            // Close (X) Button
             bottomSheetDialog.findViewById<ImageView>(R.id.btnClose)?.setOnClickListener {
-                bottomSheetDialog.dismiss() // Dismisses without applying changes
+                bottomSheetDialog.dismiss()
             }
 
             bottomSheetDialog.show()
@@ -171,19 +165,16 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                // 1. Tell the presenter to start sending the pins
                 presenter.onMapReady()
 
-                // 2. Wait half a second for Leaflet JS to finish drawing the pins,
-                // then smoothly fade out the loading screen.
                 loadingOverlay.postDelayed({
                     loadingOverlay.animate()
                         .alpha(0f)
-                        .setDuration(400) // 400ms fade animation
+                        .setDuration(400)
                         .withEndAction {
                             loadingOverlay.visibility = View.GONE
                         }
-                }, 500) // 500ms buffer
+                }, 500)
             }
         }
         webView.loadUrl("file:///android_asset/leaflet_map.html")
@@ -220,7 +211,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         }
     }
 
-    // Dynamic Title Updater based on exactly how many items passed the filters
     override fun updateSpotsCount(count: Int) {
         tvSpotsNearbyTitle.text = "$count SPOTS NEARBY"
     }
