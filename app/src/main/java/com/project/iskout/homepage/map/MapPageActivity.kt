@@ -67,6 +67,22 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         presenter = MapPresenter(this, MapModel())
         setupAdvancedFiltersModal()
         initializeMap()
+
+        // --- NEW: Handle intent to center map ---
+        if (intent.hasExtra("LATITUDE") && intent.hasExtra("LONGITUDE")) {
+            val lat = intent.getDoubleExtra("LATITUDE", 0.0)
+            val lng = intent.getDoubleExtra("LONGITUDE", 0.0)
+
+            // Post delay ensures WebView is ready to receive JS calls
+            webView.postDelayed({
+                centerMapOnCoordinates(lat, lng)
+            }, 1000)
+        }
+    }
+
+    private fun centerMapOnCoordinates(lat: Double, lng: Double) {
+        // Communicates with your leaflet_map.html
+        webView.evaluateJavascript("map.setView([$lat, $lng], 18);", null)
     }
 
     private fun setupAdvancedFiltersModal() {

@@ -19,6 +19,7 @@ class ProfileListActivity : AppCompatActivity(), ProfileListContract.View {
     private lateinit var rvList: RecyclerView
     private lateinit var tvPageTitle: TextView
     private lateinit var presenter: ProfileListPresenter
+    private val savedDealIds = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +45,20 @@ class ProfileListActivity : AppCompatActivity(), ProfileListContract.View {
     }
 
     override fun showSpotsList(spots: List<SpotListItem>) {
-        rvList.adapter = SpotsAdapter(spots)
+        rvList.adapter = SpotsAdapter(spots) { spotItem ->
+        }
     }
 
     override fun showDealsList(deals: List<DealItem>) {
-        rvList.adapter = DealsAdapter(deals)
-    }
+        // Pass the deals, the set of saved IDs, and the click listener
+        rvList.adapter = DealsAdapter(deals, savedDealIds) { deal ->
+            // Add the deal ID to the set when "Save" is clicked
+            savedDealIds.add(deal.id)
 
+            // Refresh the adapter so the button turns grey
+            rvList.adapter?.notifyDataSetChanged()
+        }
+    }
     override fun showReviewsList(reviews: List<ReviewItem>) {
         rvList.adapter = ReviewsAdapter(reviews)
     }

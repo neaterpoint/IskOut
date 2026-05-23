@@ -14,6 +14,9 @@ class DealsActivity : AppCompatActivity(), DealsContract.View {
     private lateinit var rvDeals: RecyclerView
     private lateinit var presenter: DealsPresenter
 
+    // Track saved deals by their ID
+    private val savedDealIds = mutableSetOf<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deals)
@@ -23,15 +26,18 @@ class DealsActivity : AppCompatActivity(), DealsContract.View {
         rvDeals = findViewById(R.id.rvDeals)
         rvDeals.layoutManager = LinearLayoutManager(this)
 
-        // Initialize Presenter with the universal MapModel
         presenter = DealsPresenter(this, MapModel())
-
-        // Ask presenter to fetch only the discounted data
         presenter.loadActiveDeals()
     }
 
     override fun showDeals(deals: List<DealItem>) {
-        rvDeals.adapter = DealsAdapter(deals)
+        rvDeals.adapter = DealsAdapter(deals, savedDealIds) { deal ->
+            // Save functionality
+            savedDealIds.add(deal.id)
+
+            // Refresh the adapter so the button turns grey
+            rvDeals.adapter?.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroy() {

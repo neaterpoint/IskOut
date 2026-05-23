@@ -7,7 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.project.iskout.R
 
-class SpotsAdapter(private val spots: List<SpotListItem>) : RecyclerView.Adapter<SpotsAdapter.SpotViewHolder>() {
+// Added the (SpotListItem) -> Unit callback
+class SpotsAdapter(
+    private val spots: List<SpotListItem>,
+    private val onSpotClick: (SpotListItem) -> Unit
+) : RecyclerView.Adapter<SpotsAdapter.SpotViewHolder>() {
 
     class SpotViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvRank: TextView = view.findViewById(R.id.tvRank)
@@ -39,6 +43,9 @@ class SpotsAdapter(private val spots: List<SpotListItem>) : RecyclerView.Adapter
         } else {
             holder.tvDealTag.visibility = View.GONE
         }
+
+        // Handle the click
+        holder.itemView.setOnClickListener { onSpotClick(spot) }
     }
 
     override fun getItemCount() = spots.size
