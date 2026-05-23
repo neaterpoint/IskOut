@@ -37,6 +37,9 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
     private var activeHideBusy = false
     private var activeMaxPrice = 200 // Added max price persistence
 
+    //Loading
+    private lateinit var loadingOverlay: View
+
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
         setContentView(R.layout.activity_maphomepage)
@@ -57,6 +60,7 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         chipInumin.setOnClickListener { presenter.onCategoryClicked("Inumin") }
 
         presenter = MapPresenter(this, MapModel())
+        loadingOverlay = findViewById(R.id.loadingOverlay)
         setupAdvancedFiltersModal()
         initializeMap()
     }
@@ -167,7 +171,19 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
+                // 1. Tell the presenter to start sending the pins
                 presenter.onMapReady()
+
+                // 2. Wait half a second for Leaflet JS to finish drawing the pins,
+                // then smoothly fade out the loading screen.
+                loadingOverlay.postDelayed({
+                    loadingOverlay.animate()
+                        .alpha(0f)
+                        .setDuration(400) // 400ms fade animation
+                        .withEndAction {
+                            loadingOverlay.visibility = View.GONE
+                        }
+                }, 500) // 500ms buffer
             }
         }
         webView.loadUrl("file:///android_asset/leaflet_map.html")

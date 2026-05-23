@@ -11,7 +11,6 @@ import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.project.iskout.R
 import com.project.iskout.database.DatabaseConnection
@@ -31,28 +30,41 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         super.onCreate(bundle)
         setContentView(R.layout.activity_login)
 
-        etEmail = findViewById<EditText>(R.id.etEmail)
-        etPassword = findViewById<EditText>(R.id.etPassword)
-        btnLogin = findViewById<Button>(R.id.btnLogin)
-        tvRegister = findViewById<TextView>(R.id.tvRegister)
-        //Database integration
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnLogin = findViewById(R.id.btnLogin)
+        tvRegister = findViewById(R.id.tvRegister)
+
+        // Database integration
         val db = DatabaseConnection.getDatabase(this)
-        // 2. Pass the database into the model
+        // Pass the database into the model
         presenter = LoginPresenter(this, LoginModel(db))
 
         btnLogin.setOnClickListener {
-            val username:String = etEmail.text.toString()
-            val password:String = etPassword.text.toString()
-            presenter.onLoginClicked(username,password)
+            val username = etEmail.text.toString()
+            val password = etPassword.text.toString()
+
+            // 1. Instant UI Feedback (Prevents the rigid freeze)
+            btnLogin.text = "Loading..."
+            btnLogin.isEnabled = false
+
+            // 2. Delay the heavy MVP check and Activity transition slightly
+            // This gives the Android UI thread just enough time to visually show the button changing
+            Handler(Looper.getMainLooper()).postDelayed({
+                presenter.onLoginClicked(username, password)
+            }, 150)
         }
 
         tvRegister.setOnClickListener {
             presenter.onRegisterClicked()
         }
-
     }
 
     override fun showError(message: String) {
+        // Reset the button state in case the login failed
+        btnLogin.text = "Login"
+        btnLogin.isEnabled = true
+
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_error)
@@ -83,6 +95,8 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
     override fun navigateToLanding() {
         val intent = Intent(this, MapPageActivity::class.java)
         startActivity(intent)
+        // Finish this activity so the user can't press 'Back' into the login screen
+        finish()
     }
 
     override fun onDestroy() {
