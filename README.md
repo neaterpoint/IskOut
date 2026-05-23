@@ -1,62 +1,133 @@
 # IskOut
 
-> *Iskolar* + *Scout* — A verified-only community map for Filipino students.
+> *Iskolar* + *Scout* — Find the best budget eats near your campus.
 
-IskOut is a strictly moderated Android application that connects verified students with trusted, budget-friendly karenderias and student-friendly services near their campus. Every user — student or merchant — is manually verified before gaining access, ensuring a scam-free, harassment-free experience.
+IskOut is an Android app built for Filipino students who want to discover nearby karenderias, cafes, and food spots that are actually worth it — sorted by distance, rating, and price, not by who posted loudest in a group chat. Every listing is from a verified source, every deal is real, and the map is always centered on where you are.
 
 ---
 
 ## The Problem
 
-Student Facebook groups and group chats are overrun with scam posts, vulgar content, and unverified strangers. When students ask for food recommendations, they rely on unmoderated word-of-mouth with no way to confirm if a place is safe, affordable, or still open. There is no dedicated, trusted space built for the student experience.
+When you're a student on a budget, finding a good place to eat near campus means asking in group chats, getting ten different answers, and ending up at a place that's either overpriced, mediocre, or closed. There's no reliable, student-focused way to find cheap, well-rated food nearby.
 
 ## The Solution
 
-IskOut locks access behind identity verification and replaces the chaos of unmoderated groups with a live, curated map — think Google Maps, but exclusively for students and verified local merchants.
+IskOut puts a live map of verified nearby spots in your pocket. Filter by distance, sort by rating or price, browse active flash deals, and go — no noise, no irrelevant posts, just the spots that matter to students.
 
 ---
 
 ## Features
 
+### Live Map Dashboard
+An interactive map centered on your current location showing nearby verified karenderias, cafes, and food stalls as pins. Category chips let you filter between Karinderya, Café, and Inumin instantly. Advanced filters let you narrow by minimum rating, maximum price, and active deals.
+
+### Spots List with Smart Sorting
+A list view of nearby spots, sorted and re-ranked dynamically based on your preference:
+- **Nearest** — default, closest spots first
+- **Top Rated** — highest community rating first
+- **Cheapest** — lowest average price first
+- **Live Deals** — only spots with active discounts
+
+Each spot card shows its rating, average price, distance, busyness level, and any active deal tag at a glance.
+
+### Flash Deals
+A dedicated Deals tab showing all active student discounts across verified establishments. A featured trending card highlights the hottest deal right now with a live countdown timer. All other active deals are listed below with a Save option.
+
+### Profile
+Your personal iskolar hub — shows your initials avatar, school info, review count, saved spots count, and iskolar points. Quick access to your saved spots, claimed deals, reviews, and recent visits from one screen.
+
 ### Verification-First Access
-- Students register with a **School ID**
-- Business owners register with a **Business Permit**
-- All accounts enter a **Pending** state until manually approved by an admin
-- No outsiders, no trolls, no unverified accounts
+New users register as a Student or Business Owner and submit their School ID or Business Permit for admin review. Access to the map and all features is only unlocked after approval.
 
-### Interactive Map Dashboard
-- Live map centered on the user's **current location**
-- Nearby verified karenderias, cafes, and student-friendly spots appear as pins
-- Each pin shows community ratings, menus, and active promos
+---
 
-### List View with Smart Sorting
-Switch from the map to a list of nearby spots, sortable by:
-- **Nearest** — default, sorted by proximity
-- **Rating** — highest community-rated spots first
-- **Price** — most budget-friendly first
-- **Busy-ness** — avoid peak hours
-- **Discounts** — filter to only show places with active student deals
+## Tech Stack
 
-### Merchant Portal
-Verified business owners can manage their listing, post menus, update prices, and publish flash discounts in real time directly to the student map.
+| Layer | Technology |
+|---|---|
+| Platform | Android (Native Kotlin) |
+| Min SDK | API 24 (Android 7.0) |
+| Target SDK | API 36 |
+| UI | XML Layouts, Material3, ConstraintLayout |
+| Architecture | MVP (Model-View-Presenter) |
+| Database | Room (SQLite) |
+| Map | Leaflet.js via WebView |
 
-### Verified Badges & Community Ratings
-Every profile carries a **Verified** badge backed by document approval. Students rate and review spots, building a trusted, self-sustaining reputation system.
+---
+
+## Project Structure
+
+```
+app/src/main/java/com/project/iskout/
+├── core/
+│   ├── SessionManager.kt
+│   └── database/
+│       ├── DatabaseConnection.kt
+│       ├── UserDao.kt
+│       └── entities/
+│           ├── users/
+│           ├── establishments/
+│           ├── popups/
+│           └── moderation/
+├── login/
+├── register/
+├── verification/
+├── confirmation/
+├── homepage/
+│   ├── map/
+│   └── list/
+├── deals/
+├── profile/
+│   └── list/
+└── utils/
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Android Studio (latest stable)
+- Android SDK API 24+
+- JDK 11+
+
+### Setup
+1. Clone the repository
+   ```bash
+   git clone https://github.com/neaterpoint/IskOut.git
+   ```
+2. Open the project in **Android Studio**
+3. Let Gradle sync finish
+4. Run on an emulator or physical device (API 24+)
+
+### Test Accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `123` | `123` |
+| Student | `1` | `1` |
+| Merchant | `2` | `2` |
 
 ---
 
 ## Roadmap
 
 - [x] Project setup and base architecture
-- [x] Login screen UI
-- [x] License and documentation
-- [ ] Registration with document upload
-- [ ] Admin verification dashboard
-- [ ] Google Maps integration
-- [ ] List view with sorting filters
-- [ ] Merchant portal
-- [ ] Community ratings and reviews
-- [ ] Push notifications for verification status
+- [x] Room database with full schema and seed data
+- [x] Login screen with session management
+- [x] Register flow with role selection
+- [x] Verification document submission screen
+- [x] Interactive Leaflet map with category filters and advanced filters
+- [x] Spots list with smart sorting (Nearest, Top Rated, Cheapest, Live Deals)
+- [x] Flash Deals tab with featured trending card
+- [x] Profile screen with stats and sub-list navigation
+- [x] Bottom navigation across all main screens
+- [ ] Live database integration for map pins and deals
+- [ ] Establishment detail screen with menu and reviews
+- [ ] Student pop-up events
+- [ ] Admin moderation dashboard
+- [ ] Push notifications for verification and reports
+- [ ] Community ratings and review submission
 
 ---
 
@@ -64,13 +135,14 @@ Every profile carries a **Verified** badge backed by document approval. Students
 
 | User | Need |
 |---|---|
-| **Students** | Safely find cheap, nearby food without sifting through spam |
-| **Business Owners** | Advertise directly to a verified, relevant student audience |
-| **Student Admins** | Moderate a trusted platform without chaos |
+| **Students** | Find nearby budget-friendly food sorted by price, rating, and distance |
+| **Business Owners** | Reach verified student customers with menus and live discounts |
+| **Student Admins** | Keep the platform trustworthy through document verification and moderation |
 
 ---
 
-## Entity Relationship Diagram(ERD)
+## Entity Relationship Diagram
+
 ![IskOut_ERD](IskOut_ERD.png)
 
 ---
