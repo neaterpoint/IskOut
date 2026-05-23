@@ -1,6 +1,7 @@
 package com.project.iskout.homepage.map
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.webkit.JavascriptInterface
@@ -8,14 +9,20 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.project.iskout.R
+import com.project.iskout.homepage.list.SpotListItem
+import com.project.iskout.homepage.list.SpotsAdapter
+import com.project.iskout.homepage.list.SpotsListActivity
 import com.project.iskout.utils.BottomNavManager
 import com.project.iskout.utils.NavTab
 
@@ -33,7 +40,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
     private lateinit var chipInumin: TextView
     private lateinit var tvSpotsNearbyTitle: TextView
 
-    // Persist Advanced Filter States
     private var activeMinRating = 0.0
     private var activeDiscountsOnly = false
     private var activeHideBusy = false
@@ -45,7 +51,6 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         super.onCreate(bundle)
         setContentView(R.layout.activity_maphomepage)
 
-        // --- NEW: Setup Dynamic Bottom Nav ---
         BottomNavManager.setup(this, NavTab.MAP)
 
         loadingOverlay = findViewById(R.id.loadingOverlay)
@@ -58,30 +63,61 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
         chipInumin = findViewById(R.id.chipInumin)
         tvSpotsNearbyTitle = findViewById(R.id.tvSpotsNearbyTitle)
 
-        // Basic Category Listeners
         chipAll.setOnClickListener { presenter.onCategoryClicked("All") }
         chipKarinderya.setOnClickListener { presenter.onCategoryClicked("Karinderya") }
         chipCafe.setOnClickListener { presenter.onCategoryClicked("Cafe") }
         chipInumin.setOnClickListener { presenter.onCategoryClicked("Inumin") }
 
         presenter = MapPresenter(this, MapModel())
+
+        findViewById<ImageView>(R.id.llNearestButton).setOnClickListener {
+            presenter.onNearestSpotsRequested()
+        }
+
         setupAdvancedFiltersModal()
         initializeMap()
 
-        // --- NEW: Handle intent to center map ---
         if (intent.hasExtra("LATITUDE") && intent.hasExtra("LONGITUDE")) {
             val lat = intent.getDoubleExtra("LATITUDE", 0.0)
             val lng = intent.getDoubleExtra("LONGITUDE", 0.0)
 
-            // Post delay ensures WebView is ready to receive JS calls
             webView.postDelayed({
                 centerMapOnCoordinates(lat, lng)
             }, 1000)
         }
     }
 
-    private fun centerMapOnCoordinates(lat: Double, lng: Double) {
-        // Communicates with your leaflet_map.html
+    override fun showNearestSpotsBottomSheet(spots: List<SpotListItem>) {
+        val dialog = BottomSheetDialog(this)
+        dialog.setContentView(R.layout.layout_bottom_sheet_nearest)
+
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        dialog.behavior.skipCollapsed = true
+
+        val rvNearest = dialog.findViewById<RecyclerView>(R.id.rvNearestSpots)
+        rvNearest?.layoutManager = LinearLayoutManager(this)
+        rvNearest?.adapter = SpotsAdapter(spots) { clickedSpotItem ->
+            dialog.dismiss()
+
+            val originalSpot = MapModel().getNearbySpots().find { it.id == clickedSpotItem.id }
+            if (originalSpot != null) {
+                centerMapOnCoordinates(originalSpot.latitude, originalSpot.longitude)
+                updateBottomSheetDetails(originalSpot)
+            }
+        }
+
+        dialog.findViewById<MaterialButton>(R.id.btnOpenFullList)?.setOnClickListener {
+            dialog.dismiss()
+            val intent = Intent(this, SpotsListActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
+    }
+
+    override fun centerMapOnCoordinates(lat: Double, lng: Double) {
         webView.evaluateJavascript("map.setView([$lat, $lng], 18);", null)
     }
 
@@ -92,12 +128,9 @@ class MapPageActivity : AppCompatActivity(), MapContract.View {
             val bottomSheetDialog = BottomSheetDialog(this)
             bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_filters)
 
-            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-            }
+            // FIXED: Using `.behavior` bypasses the red 'R' error completely!
+            bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            bottomSheetDialog.behavior.skipCollapsed = true
 
             val chipAny = bottomSheetDialog.findViewById<TextView>(R.id.chipRatingAny)
             val chip3 = bottomSheetDialog.findViewById<TextView>(R.id.chipRating3)
